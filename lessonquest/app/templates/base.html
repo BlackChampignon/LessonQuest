@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}LessonQuest · A little play. A lot of learning.{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% block header %}
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="LessonQuest homepage"><span class="brand-mark"><i data-lucide="sparkles"></i></span>Lesson<span>Quest</span><small>TEACHER STUDIO</small></a>
+    <nav><a href="/" class="nav-active"><i data-lucide="layout-grid"></i> My activities</a><span class="teacher-avatar" title="Your teacher studio">T</span></nav>
+  </header>
+  {% endblock %}
+  {% block content %}{% endblock %}
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="{{ url_for('static', path='js/common.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

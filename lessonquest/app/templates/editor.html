@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if activity else 'Create' }} {{ activity_templates[kind].name }} · LessonQuest{% endblock %}
+{% block content %}
+<main class="studio editor-studio">
+  <a href="/" class="back-link"><i data-lucide="arrow-left"></i> My activities</a>
+  <div class="editor-heading">
+    <div>
+      <div class="eyebrow muted">{{ activity_templates[kind].name|upper }}</div>
+      <h1>{{ 'A fresh little update.' if activity else 'Let’s build something fun.' }}</h1>
+      <p id="template-help"></p>
+    </div><span class="template-icon {{ activity_templates[kind].color }}"><i
+        data-lucide="{{ activity_templates[kind].icon }}"></i></span>
+  </div>
+  <form id="activity-form">
+    <div class="editor-toolbar panel"><label class="title-label">Activity title<input name="title" id="activity-title"
+          maxlength="160" required placeholder="e.g. Our solar system adventure"
+          value="{{ activity.title if activity else '' }}"></label>
+      <div id="settings"></div>
+    </div>
+    <div class="editor-columns">
+      <section>
+        <div id="items-editor"></div><button type="button" id="add-item" class="btn add-item"><i data-lucide="plus"></i>
+          Add another item</button>
+      </section>
+      <aside class="editor-aside">
+        <div class="panel">
+          <div class="eyebrow muted">LIVE PREVIEW</div>
+          <h3>A peek at the magic</h3>
+          <div id="item-preview" class="preview-surface"></div>
+          <p class="small-note">Maths works with <code>$…$</code> or <code>\(…\)</code>. Maths Generator also accepts
+            bare LaTeX.</p>
+        </div>
+        <div class="tip-card"><i data-lucide="lightbulb"></i>
+          <h3>Keep it classroom-sized</h3>
+          <p>Short prompts and clear choices work best on a whiteboard. All activities support up to 100 items.</p>
+          <button type="button" id="load-example" class="btn btn-secondary">Try an example</button>
+        </div>
+      </aside>
+    </div>
+    <div class="save-bar"><span id="save-state" role="status">Your ideas are ready to be saved.</span>
+      <div><a href="/" class="btn btn-secondary">Cancel</a><button type="submit" class="btn btn-primary"
+          id="save-button"><i data-lucide="check"></i> Save activity</button><button type="submit" class="btn btn-dark"
+          id="save-play" value="play"><i data-lucide="play"></i> Save & play</button></div>
+    </div>
+    <p id="form-error" class="form-error" role="alert" hidden></p>
+  </form>
+</main>
+<script id="editor-data" type="application/json">{{ {'kind': kind, 'activity': activity}|tojson }}</script>
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', path='js/editor.js') }}"></script>{% endblock %}

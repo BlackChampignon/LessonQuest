@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<main class="studio">
+  <section class="welcome-banner">
+    <div class="welcome-copy">
+      <div class="eyebrow"><span class="dot"></span> LET’S MAKE LEARNING AN ADVENTURE</div>
+      <h1>Small moments.<br><span>Big discoveries.</span></h1>
+      <p>Turn your next lesson into something they’ll remember.<br>Create, play, and let curiosity take the lead.</p>
+      <button class="btn btn-primary" id="create-activity"><i data-lucide="plus"></i> Create new activity <i
+          data-lucide="arrow-up-right"></i></button>
+    </div>
+    <div class="hero-art" aria-hidden="true"><span class="spark s1">✦</span><span class="spark s2">✧</span><span
+        class="orb orb-one"></span>
+      <div class="art-card art-yellow"><i data-lucide="lightbulb"></i><span>Aha!</span></div>
+      <div class="art-card art-purple"><i data-lucide="puzzle"></i></div>
+      <div class="art-card art-green"><span>2 + 2</span><strong>= 4</strong></div><span class="spark s3">✦</span><span
+        class="orb orb-two"></span>
+      <div class="art-caption">a little play. a lot of learning.</div>
+    </div>
+  </section>
+  <section class="library">
+    <div class="library-heading">
+      <div>
+        <div class="eyebrow muted">YOUR CLASSROOM TOOLKIT</div>
+        <h2>My activities <span class="count">{{ activities|length }}</span></h2>
+      </div><label class="search-box"><i data-lucide="search"></i><input id="search" type="search"
+          placeholder="Find an activity…" aria-label="Search activities"></label>
+    </div>
+    <div class="filter-row"><button class="filter active" data-filter="all">All activities</button><button
+        class="filter" data-filter="quiz">Quizzes</button><button class="filter" data-filter="flashcards">Flash
+        cards</button><button class="filter" data-filter="maths">Maths</button><button class="filter"
+        data-filter="other">More templates</button><span class="saved-note"><i data-lucide="hard-drive"></i> Saved on
+        your device</span></div>
+    <div class="activity-grid" id="activity-grid">
+      {% for activity in activities %}{% set meta = activity_templates[activity.template_type] %}
+      <article class="activity-card" data-title="{{ activity.title|lower }}" data-kind="{{ activity.template_type }}">
+        <a class="card-art {{ meta.color }}" href="/play/{{ activity.id }}" aria-label="Play {{ activity.title }}"><span
+            class="card-pattern"></span><i data-lucide="{{ meta.icon }}"></i><span class="art-pill">{{ meta.name
+            }}</span><span class="play-bubble"><i data-lucide="play"></i></span></a>
+        <div class="card-content"><span class="template-label">{{ meta.name }}</span>
+          <h3 title="{{ activity.title }}">{{ activity.title }}</h3>
+          <p><i data-lucide="list"></i> {{ activity.content_json['items']|length }} items <span>·</span> Updated {{
+            activity.updated_at.strftime('%d %b %Y') }}</p>
+          <div class="card-actions"><a class="btn btn-play" href="/play/{{ activity.id }}"><i data-lucide="play"></i>
+              Play</a><a class="icon-btn" href="/editor?id={{ activity.id }}" aria-label="Edit {{ activity.title }}"
+              title="Edit"><i data-lucide="pencil"></i></a><button class="icon-btn" data-duplicate="{{ activity.id }}"
+              aria-label="Duplicate {{ activity.title }}" title="Duplicate"><i data-lucide="copy"></i></button><button
+              class="icon-btn danger" data-delete="{{ activity.id }}" data-name="{{ activity.title }}"
+              aria-label="Delete {{ activity.title }}" title="Delete"><i data-lucide="trash-2"></i></button></div>
+        </div>
+      </article>
+      {% endfor %}
+      <button class="new-card" id="new-card"><span class="new-icon"><i data-lucide="plus"></i></span>
+        <h3>Your next great idea</h3>
+        <p>Pick a template. Make it yours.</p><span>Create an activity <i data-lucide="arrow-right"></i></span>
+      </button>
+    </div>
+    <p id="no-results" class="empty-message" hidden>No activities match your search.</p>
+    {% if not activities %}<p class="empty-message">Your collection starts here. Choose a template and bring your first
+      lesson to life.</p>{% endif %}
+  </section>
+  <footer class="studio-footer"><span><i data-lucide="heart"></i> Made for curious minds.</span><span>Your classroom.
+      Your content. Your adventure.</span></footer>
+</main>
+<dialog id="template-dialog">
+  <div class="dialog-heading">
+    <div>
+      <div class="eyebrow muted">START SOMETHING BRILLIANT</div>
+      <h2>How will you play today?</h2>
+      <p>Eight ways to make your lesson come alive.</p>
+    </div><button class="icon-btn" id="close-dialog" aria-label="Close"><i data-lucide="x"></i></button>
+  </div>
+  <div class="template-grid">{% for key, meta in activity_templates.items() %}<a href="/editor?template={{ key }}"
+      class="template-choice"><span class="template-icon {{ meta.color }}"><i data-lucide="{{ meta.icon }}"></i></span>
+      <h3>{{ meta.name }}</h3>
+      <p>{{ meta.description }}</p><span class="choose-arrow"><i data-lucide="arrow-up-right"></i></span>
+    </a>{% endfor %}</div>
+</dialog>
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', path='js/dashboard.js') }}"></script>{% endblock %}
