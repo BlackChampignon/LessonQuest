@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-TemplateType = Literal["quiz", "gameshow", "open_box", "flashcards", "type_answer", "unjumble", "cloze", "maths"]
+TemplateType = Literal["quiz", "gameshow", "open_box", "flashcards", "type_answer", "unjumble", "cloze", "maths", "match_up"]
 
 
 class Item(BaseModel):
@@ -55,7 +55,7 @@ class ActivityWrite(BaseModel):
             elif kind == "open_box":
                 if not item.prompt:
                     error = "A box needs a challenge."
-            elif kind == "type_answer":
+            elif kind in ("type_answer", "match_up"):
                 if not item.prompt or not item.answer:
                     error = "Enter a question and its answer."
             elif kind == "unjumble":
@@ -69,6 +69,11 @@ class ActivityWrite(BaseModel):
                     error = "Every blank must use matching square brackets."
             if error:
                 raise ValueError(f"Item {i}: {error}")
+        if kind == "match_up":
+            for field in ("prompt", "answer"):
+                texts = [" ".join(getattr(item, field).casefold().split()) for item in self.content_json.items]
+                if len(set(texts)) != len(texts):
+                    raise ValueError("Match Up needs distinct questions and distinct answers so each pair is unambiguous.")
         return self
 
 

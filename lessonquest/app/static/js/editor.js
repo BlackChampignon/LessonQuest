@@ -9,7 +9,8 @@
     type_answer:'Add a prompt and its answer. Alternate answers are separated by a vertical bar (|).',
     unjumble:'Write the correct sentence. Separate mathematical tokens with spaces, e.g. 2 + 3 = 5.',
     cloze:'Wrap missing words in brackets, e.g. The [Earth] orbits the [Sun].',
-    maths:'Enter manual formulas in LaTeX. Choose multiple choice or flip cards for rapid drill review.'
+    maths:'Enter manual formulas in LaTeX. Choose multiple choice or flip cards for rapid drill review.',
+    match_up:'Enter each question beside its correct answer. Use distinct questions and answers. Players connect the shuffled columns and submit when every pair is linked.'
   };
   const blank = () => ({prompt:'',options:['',''],correct:0,answer:'',aliases:[],back:'',sentence:'',bonus:false});
   let items = activity ? structuredClone(activity.content_json.items) : [blank()];
@@ -42,10 +43,10 @@
         fields += `<p class="option-help">Select the circle beside the correct choice.</p><div class="options-list">${item.options.map((value, oi) => `<div class="option-row"><input type="radio" name="correct-${index}" data-correct="${oi}" ${item.correct === oi ? 'checked' : ''} aria-label="Choice ${oi+1} is correct"><input type="text" data-option="${oi}" value="${esc(value)}" maxlength="1000" required placeholder="Choice ${oi+1}" aria-label="Choice ${oi+1}"><button type="button" class="icon-btn" data-remove-option="${oi}" ${item.options.length <= 2 ? 'disabled' : ''} aria-label="Remove choice"><i data-lucide="x"></i></button></div>`).join('')}</div><button type="button" class="btn btn-secondary" data-add-option ${item.options.length >= 4 ? 'disabled' : ''} style="margin-top:12px;font-size:12px">+ Add choice</button>`;
       }
       if (cards()) fields += field('Back of card / solution', 'back', item.back, true, 'required');
-      if (['open_box','type_answer'].includes(kind)) fields += field(kind === 'open_box' ? 'Reveal answer (optional)' : 'Correct answer', 'answer', item.answer, true, kind === 'type_answer' ? 'required' : '');
+      if (['open_box','type_answer','match_up'].includes(kind)) fields += field(kind === 'open_box' ? 'Reveal answer (optional)' : 'Correct answer', 'answer', item.answer, true, kind !== 'open_box' ? 'required' : '');
       if (kind === 'type_answer') fields += field('Alternate answers (separate with |)', 'aliases', item.aliases.join(' | '), false, 'maxlength="2000"');
       if (kind === 'gameshow') fields += `<label class="check-label"><input type="checkbox" data-field="bonus" ${item.bonus ? 'checked' : ''}> Bonus round · double points</label>`;
-      return `<article class="item-editor panel" data-index="${index}"><div class="item-heading"><span class="item-number">${index+1}</span><h3>${cards() ? 'Card' : kind === 'open_box' ? 'Box' : 'Item'} ${index+1}</h3><button type="button" class="icon-btn" data-move="-1" ${index === 0 ? 'disabled' : ''} aria-label="Move item up"><i data-lucide="arrow-up"></i></button><button type="button" class="icon-btn" data-move="1" ${index === items.length-1 ? 'disabled' : ''} aria-label="Move item down"><i data-lucide="arrow-down"></i></button><button type="button" class="icon-btn danger" data-remove ${items.length === 1 ? 'disabled' : ''} aria-label="Remove item"><i data-lucide="trash-2"></i></button></div>${fields}</article>`;
+      return `<article class="item-editor panel" data-index="${index}"><div class="item-heading"><span class="item-number">${index+1}</span><h3>${cards() ? 'Card' : kind === 'open_box' ? 'Box' : kind === 'match_up' ? 'Pair' : 'Item'} ${index+1}</h3><button type="button" class="icon-btn" data-move="-1" ${index === 0 ? 'disabled' : ''} aria-label="Move item up"><i data-lucide="arrow-up"></i></button><button type="button" class="icon-btn" data-move="1" ${index === items.length-1 ? 'disabled' : ''} aria-label="Move item down"><i data-lucide="arrow-down"></i></button><button type="button" class="icon-btn danger" data-remove ${items.length === 1 ? 'disabled' : ''} aria-label="Remove item"><i data-lucide="trash-2"></i></button></div><div class="${kind === 'match_up' ? 'match-editor-fields' : ''}">${fields}</div></article>`;
     }).join('');
     container.querySelectorAll('.item-editor').forEach(article => {
       const index = Number(article.dataset.index), item = items[index];
@@ -91,7 +92,12 @@
       cloze:{sentence:'A triangle has [three] sides and [three] angles.'},
       maths:{prompt:'\\frac{3}{4} + \\frac{1}{4}',options:['1','2','\\frac{1}{2}','\\frac{3}{8}'],correct:0,back:'1'}
     };
-    items = [{...blank(),...examples[kind]}]; selected = 0; if (!document.getElementById('activity-title').value) document.getElementById('activity-title').value = 'My first ' + kind.replace('_',' ') + ' adventure'; markDirty(); render();
+    items = kind === 'match_up' ? [
+      {prompt:'Which planet is known as the Red Planet?',answer:'Mars'},
+      {prompt:'What is the largest ocean on Earth?',answer:'Pacific Ocean'},
+      {prompt:'How many sides does a triangle have?',answer:'Three'},
+      {prompt:'What do bees make?',answer:'Honey'}
+    ].map(pair => ({...blank(),...pair})) : [{...blank(),...examples[kind]}]; selected = 0; if (!document.getElementById('activity-title').value) document.getElementById('activity-title').value = 'My first ' + kind.replace('_',' ') + ' adventure'; markDirty(); render();
   };
   form.addEventListener('submit', async event => {
     event.preventDefault(); if (saving) return;
@@ -100,6 +106,7 @@
       if (choice()) return {prompt:item.prompt,options:item.options,correct:item.correct,bonus:kind==='gameshow'&&item.bonus};
       if (cards()) return {prompt:item.prompt,back:item.back};
       if (kind==='open_box') return {prompt:item.prompt,answer:item.answer};
+      if (kind==='match_up') return {prompt:item.prompt,answer:item.answer};
       if (kind==='type_answer') return {prompt:item.prompt,answer:item.answer,aliases:item.aliases};
       return {sentence:item.sentence};
     });

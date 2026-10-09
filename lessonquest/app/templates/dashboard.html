@@ -67,7 +67,7 @@
     <div>
       <div class="eyebrow muted">START SOMETHING BRILLIANT</div>
       <h2>How will you play today?</h2>
-      <p>Eight ways to make your lesson come alive.</p>
+      <p>{{ activity_templates|length }} ways to make your lesson come alive.</p>
     </div><button class="icon-btn" id="close-dialog" aria-label="Close"><i data-lucide="x"></i></button>
   </div>
   <div class="template-grid">{% for key, meta in activity_templates.items() %}<a href="/editor?template={{ key }}"

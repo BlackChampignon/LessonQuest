@@ -2152,6 +2152,79 @@ dialog::backdrop {
     }
 }
 
+.match-editor-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.match-heading { text-align: center; margin: 0 0 26px; }
+.match-heading h1 { font-size: clamp(26px, 4vw, 38px); }
+.match-heading p { color: var(--muted); max-width: 720px; margin: 10px auto; }
+.match-board {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 120px;
+}
+.match-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.match-line { fill: none; stroke: #a18ad5; stroke-width: 5; stroke-linecap: round; }
+.match-line-draft { stroke-dasharray: 8 8; opacity: .7; }
+.match-line-correct { stroke: #45a77d; }
+.match-line-wrong { stroke: #d67a96; stroke-dasharray: 9 5; }
+.match-column { position: relative; min-width: 0; }
+.match-column h2 { font-size: 22px; color: #8f83b3; text-align: center; margin: 0 0 20px; }
+.match-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 88px;
+    margin-bottom: 18px;
+    padding: 18px 24px;
+    background: white;
+    border: 2px solid #ddd5ee;
+    border-bottom-width: 5px;
+    border-radius: 17px;
+    color: var(--ink);
+    font: 500 21px/1.5 Fredoka, Nunito, sans-serif;
+    text-align: center;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.match-card:hover { background: #f8f5ff; border-color: #b5a2de; }
+.match-card:active { cursor: grabbing; }
+.match-card-text { min-width: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.match-connector { position: absolute; top: calc(50% - 7px); width: 14px; height: 14px; border: 3px solid #b5a2de; background: white; border-radius: 50%; }
+.match-question .match-connector { right: -8px; }
+.match-answer .match-connector { left: -8px; }
+.match-card.match-linked { border-color: #ac96d6; background: #f4f0fc; }
+.match-card.match-linked .match-connector { background: #a18ad5; }
+.match-card.match-selected { outline: 3px solid #8970cb; outline-offset: 4px; background: #ede5ff; }
+.match-card:disabled { opacity: 1; cursor: default; }
+.match-card.match-correct { border-color: #73be9e; background: #e1f5eb; }
+.match-card.match-wrong { border-color: #dfa1b4; background: #fff0f4; }
+.match-card.match-correct .match-connector { background: #45a77d; border-color: #45a77d; }
+.match-card.match-wrong .match-connector { background: #d67a96; border-color: #d67a96; }
+.match-status { text-align: center; color: #80709e; font-weight: 900; margin: 12px auto; }
+.match-hint { text-align: center; max-width: 720px; margin: auto; }
+.match-results { margin-top: 36px; scroll-margin-top: 22px; }
+.match-results h2 { text-align: center; font-size: 32px; }
+@media(max-width:700px) {
+    .match-editor-fields { grid-template-columns: 1fr; gap: 0; }
+    .match-board { gap: 54px; }
+    .match-card { padding: 14px; font-size: 17px; }
+    .match-column h2 { font-size: 19px; }
+}
+@media(max-width:420px) {
+    .match-board { gap: 36px; }
+    .match-card { padding: 12px 10px; font-size: 15px; }
+}
+
 @media(prefers-reduced-motion:reduce) {
 
     *,

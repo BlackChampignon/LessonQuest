@@ -1,6 +1,6 @@
 # LessonQuest
 
-A self-hosted classroom activity studio for ages 8–14, built with FastAPI, SQLite, Jinja2, and browser-native games. One teacher, eight templates, no accounts. Activities start empty; use **Try an example** in any editor to get started quickly.
+A self-hosted classroom activity studio for ages 8–14, built with FastAPI, SQLite, Jinja2, and browser-native games. One teacher, nine templates, no accounts. Activities start empty; use **Try an example** in any editor to get started quickly.
 
 ## Build and run
 
@@ -22,7 +22,7 @@ The container entrypoint prepares the bind-mounted storage for UID 10001, then d
 
 ## Create and run an activity
 
-1. Select **Create new activity**, then one of the eight templates.
+1. Select **Create new activity**, then one of the nine templates.
 2. Give it a title. Fill the dedicated fields or select **Try an example**.
 3. Add and reorder items. The sidebar previews the selected item and renders formulas.
 4. Select **Save activity** or **Save & play**. Saving validates every item on the server.
@@ -41,10 +41,13 @@ The container entrypoint prepares the bind-mounted storage for UID 10001, then d
 | Unjumble | A correct sentence or expression split by spaces. Tap tiles in order or drag to the answer area; tap selected tiles to return them. Start over resets the arrangement. |
 | Complete the Sentence | Surround missing words with `[brackets]`. Select a blank and tap a word, or drag a word onto a blank. Duplicate words are supported. Tap a filled blank to clear it. |
 | Maths Generator | Manually authored LaTeX drills in multiple-choice or flip-card mode. No automatic equation generation or algebra solving. Use `\frac{a}{b}`, `\sqrt{x}`, or `2x + 5 = 15`. |
+| Match Up | Enter distinct question–answer pairs. Both columns shuffle. Drag in either direction to draw a line, or tap/keyboard-select one card from each column. Tap a linked card to disconnect it; reconnecting replaces any previous partner. Submit activates when every pair is linked. Results show correct/incorrect lines, percentage, chosen answers, and corrections. |
 
 Maths Generator renders bare LaTeX; other templates render math between `$…$`, `$$…$$`, `\(…\)`, or `\[…\]`. Use spaces between Unjumble tokens, e.g. `2 + 3 = 5`. KaTeX displays formulas; it does not validate their mathematical correctness. All templates support 1–100 items.
 
 Quiz-style games award 100 points for a correct item and Gameshow bonus rounds award 200. Unjumble, Cloze, and Type the Answer record one scored attempt per item and show the solution after an incorrect answer. The final review lists the answers. Player progress and scores are session-only; activity content is persisted immediately upon a successful save.
+
+Match Up awards 100 points per correct pair after submitting the entire test. Connections remain editable without correctness hints until submission. **Try again** clears results and reshuffles both columns. Questions and answers must each be distinct (ignoring case and repeated whitespace) to keep one-to-one matching unambiguous.
 
 ## Verify persistence
 
@@ -73,9 +76,10 @@ Activate with `.venv\Scripts\Activate.ps1` on Windows or `source .venv/bin/activ
 python -m pip install -r requirements-dev.txt
 python -m uvicorn app.main:app --reload --port 8000
 python -m pytest -q
+node tests/matching_state.test.mjs
 ```
 
-Tests use isolated temporary databases and verify CRUD for all eight templates plus both maths modes, invalid input, HTML escaping, missing records, and persistence across separate Python processes. Set `DATA_DIR` to override the local `data` directory; Docker sets it to `/app/data`.
+Tests use isolated temporary databases and verify CRUD for all nine templates plus both maths modes, invalid input, HTML escaping, missing records, and persistence across separate Python processes. Set `DATA_DIR` to override the local `data` directory; Docker sets it to `/app/data`.
 
 ## API
 
@@ -84,7 +88,7 @@ Interactive API documentation is available at `/docs`.
 | Method | Path | Purpose |
 |---|---|---|
 | GET | `/` | Dashboard |
-| GET | `/editor?template=quiz` | New activity (`gameshow`, `open_box`, `flashcards`, `type_answer`, `unjumble`, `cloze`, `maths` also supported) |
+| GET | `/editor?template=quiz` | New activity (`gameshow`, `open_box`, `flashcards`, `type_answer`, `unjumble`, `cloze`, `maths`, `match_up` also supported) |
 | GET | `/editor?id=1` | Edit saved activity |
 | GET | `/play/1` | Classroom player |
 | GET | `/api/activities` | List saved activities |

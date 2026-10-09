@@ -34,6 +34,7 @@ CASES = [
     ("cloze", {"sentence": "The [Sun] is a [star]."}, "choice"),
     ("maths", {"prompt": r"\frac{1}{2}+\frac{1}{2}", "options": ["1", "2"], "correct": 0}, "choice"),
     ("maths", {"prompt": r"\sqrt{16}", "back": "4"}, "cards"),
+    ("match_up", {"prompt": "Red planet?", "answer": "Mars"}, "choice"),
 ]
 
 
@@ -69,6 +70,8 @@ def test_every_template_crud(client, kind, item, mode):
     ("open_box", {"prompt": " "}),
     ("flashcards", {"prompt": "Front", "back": ""}),
     ("type_answer", {"prompt": "Question", "answer": " "}),
+    ("match_up", {"prompt": "Question", "answer": " "}),
+    ("match_up", {"prompt": " ", "answer": "Answer"}),
     ("unjumble", {"sentence": "one"}),
     ("cloze", {"sentence": "No missing words"}),
     ("cloze", {"sentence": "An [ ] empty blank"}),
@@ -126,3 +129,25 @@ def test_bind_mount_uses_rollback_journaling(client):
         assert connection.execute(text("PRAGMA journal_mode")).scalar() == "delete"
         assert connection.execute(text("PRAGMA synchronous")).scalar() == 2
         assert connection.execute(text("PRAGMA foreign_keys")).scalar() == 1
+
+
+@pytest.mark.parametrize("items", [
+    [{"prompt": "Planet?", "answer": "Mars"}, {"prompt": "  PLANET? ", "answer": "Earth"}],
+    [{"prompt": "First?", "answer": "The Sun"}, {"prompt": "Second?", "answer": "the   sun"}],
+])
+def test_matching_rejects_ambiguous_pairs(client, items):
+    response = client.post("/api/activities", json={"title": "Matching", "template_type": "match_up", "content_json": {"items": items}})
+    assert response.status_code == 422
+    assert "distinct" in response.text
+
+
+def test_matching_keeps_pair_relationships_through_edit_and_clone(client):
+    items = [{"prompt": "Planet?", "answer": "Mars"}, {"prompt": "Ocean?", "answer": "Pacific"}]
+    payload = {"title": "Matching", "template_type": "match_up", "content_json": {"items": items}}
+    saved = client.post("/api/activities", json=payload).json()
+    items.reverse()
+    items[0]["answer"] = "Pacific Ocean"
+    updated = client.put(f"/api/activities/{saved['id']}", json=payload).json()
+    duplicate = client.post(f"/api/activities/{saved['id']}/duplicate").json()
+    for activity in [updated, duplicate]:
+        assert [(i["prompt"], i["answer"]) for i in activity["content_json"]["items"]] == [("Ocean?", "Pacific Ocean"), ("Planet?", "Mars")]

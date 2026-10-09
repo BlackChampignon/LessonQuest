@@ -22,6 +22,7 @@ TEMPLATES = {
     "unjumble": {"name": "Unjumble", "icon": "shuffle", "color": "pink", "description": "Piece together the perfect sentence."},
     "cloze": {"name": "Complete the Sentence", "icon": "text-cursor-input", "color": "indigo", "description": "Find the missing pieces."},
     "maths": {"name": "Maths Generator", "icon": "sigma", "color": "teal", "description": "Make numbers your superpower."},
+    "match_up": {"name": "Match Up", "icon": "git-compare-arrows", "color": "sky", "description": "Connect questions to their perfect answers."},
 }
 
 

@@ -7,8 +7,9 @@ import {TypeAnswer} from './games/type_answer.js';
 import {Unjumble} from './games/unjumble.js';
 import {Cloze} from './games/cloze.js';
 import {Maths} from './games/maths.js';
+import {MatchUp} from './games/match_up.js';
 const activity=JSON.parse(document.getElementById('activity-data').textContent);
-const engines={quiz:Quiz,gameshow:Gameshow,open_box:OpenBox,flashcards:Flashcards,type_answer:TypeAnswer,unjumble:Unjumble,cloze:Cloze,maths:Maths};
+const engines={quiz:Quiz,gameshow:Gameshow,open_box:OpenBox,flashcards:Flashcards,type_answer:TypeAnswer,unjumble:Unjumble,cloze:Cloze,maths:Maths,match_up:MatchUp};
 let engine;
 const ctx={root:document.getElementById('game'),kind:activity.template_type,items:activity.content_json.items,settings:activity.content_json,
   progress(current,total,score=null) { document.getElementById('game-progress').textContent=`${current} / ${total} ${this.kind==='flashcards' || (this.kind==='maths' && this.settings.mode==='cards') ? 'cards' : 'items'}`;document.getElementById('progress-fill').style.width=`${100*current/total}%`;document.getElementById('game-score').textContent=score===null?'':`${score} points`; },
